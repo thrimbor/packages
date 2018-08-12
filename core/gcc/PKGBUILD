@@ -88,7 +88,6 @@ build() {
       --enable-languages=c,c++,ada,fortran,go,lto,objc,obj-c++ \
       --enable-shared \
       --enable-threads=posix \
-      --enable-libmpx \
       --with-system-zlib \
       --with-isl \
       --enable-__cxa_atexit \
@@ -149,8 +148,6 @@ package_gcc-libs() {
 
   make -C $CHOST/libobjc DESTDIR="$pkgdir" install-libs
   make -C $CHOST/libstdc++-v3/po DESTDIR="$pkgdir" install
-  make -C $CHOST/libmpx DESTDIR="$pkgdir" install
-  rm -f "$pkgdir/usr/lib/libmpx.spec"
 
   for lib in libgomp \
              libitm \
@@ -205,7 +202,6 @@ package_gcc() {
   make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/libmpx DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 
   make -C libiberty DESTDIR="$pkgdir" install
   install -m644 libiberty/pic/libiberty.a "$pkgdir/usr/lib"
