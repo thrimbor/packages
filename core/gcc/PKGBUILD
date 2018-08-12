@@ -63,7 +63,7 @@ prepare() {
   sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
 
   # Arch Linux installs x86_64 libraries /lib
-  sed -i '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64
+  [[ $CARCH == "x86_64" ]] && sed -i '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64
 
   # hack! - some configure tests for header files using "$CPP $CPPFLAGS"
   sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" {libiberty,gcc}/configure
@@ -128,7 +128,7 @@ package_gcc-libs() {
   depends=('glibc>=2.27')
   options+=(!strip)
   provides=(libgo.so libgfortran.so libubsan.so libasan.so
-            libtsan.so liblsan.so)
+            liblsan.so)
 
   cd gcc-build
   make -C $CHOST/libgcc DESTDIR="$pkgdir" install-shared
@@ -140,7 +140,7 @@ package_gcc-libs() {
              libgomp \
              libitm \
              libquadmath \
-             libsanitizer/{a,l,ub,t}san \
+             libsanitizer/{a,l,ub}san \
              libstdc++-v3/src \
              libvtv; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
@@ -201,7 +201,6 @@ package_gcc() {
   make -C $CHOST/libquadmath DESTDIR="$pkgdir" install-nodist_libsubincludeHEADERS
   make -C $CHOST/libsanitizer DESTDIR="$pkgdir" install-nodist_{saninclude,toolexeclib}HEADERS
   make -C $CHOST/libsanitizer/asan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
-  make -C $CHOST/libsanitizer/tsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
   make -C $CHOST/libsanitizer/lsan DESTDIR="$pkgdir" install-nodist_toolexeclibHEADERS
 
   make -C libiberty DESTDIR="$pkgdir" install
