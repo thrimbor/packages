@@ -141,8 +141,7 @@ package_gcc-libs() {
              libitm \
              libquadmath \
              libsanitizer/{a,l,ub}san \
-             libstdc++-v3/src \
-             libvtv; do
+             libstdc++-v3/src; do
     make -C $CHOST/$lib DESTDIR="$pkgdir" install-toolexeclibLTLIBRARIES
   done
 
