@@ -1,0 +1,11 @@
+--- nss/build.sh	2018-08-15 22:27:09.744609173 +0200
++++ nss/build2.sh	2018-08-15 22:27:24.687959787 +0200
+@@ -111,8 +111,6 @@
+ fi
+ if [ "$build_64" = 1 ]; then
+     nspr_params+=(--enable-64bit)
+-elif [ ! "$armhf" = 1 ]; then
+-    gyp_params+=(-Dtarget_arch=ia32)
+ fi
+ if [ "$fuzz" = 1 ]; then
+     source "$cwd"/coreconf/fuzz.sh
