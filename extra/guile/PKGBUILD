@@ -1,0 +1,41 @@
+# $Id$
+# Maintainer:  Jan de Groot <jgc@archlinux.org>
+# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=guile
+pkgver=2.2.4
+pkgrel=1
+pkgdesc='Portable, embeddable Scheme implementation written in C'
+url='https://www.gnu.org/software/guile/'
+arch=(x86_64 ppc ppc64)
+license=(GPL)
+makedepends=('git')
+depends=(gmp libltdl ncurses texinfo libunistring gc libffi)
+source=("git+https://git.savannah.gnu.org/git/${pkgname}.git#tag=v${pkgver}")
+sha256sums=('SKIP')
+
+build() {
+  cd $pkgname
+
+  # Due to a crash bug in the 2.2.4 release package, we need to use autogen
+  # and build from git.
+  # WARNING: This makes building take an EXTREMELY long time!
+  ./autogen.sh
+
+  ./configure --prefix=/usr \
+    --disable-static  \
+    --disable-error-on-warning
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  make -C $pkgname DESTDIR="$pkgdir" install
+  rm "$pkgdir"/usr/lib/libguile-2.?.so.*-gdb.scm
+}
