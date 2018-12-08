@@ -1,0 +1,28 @@
+# $Id$
+# Maintainer:
+
+pkgname=freetds
+pkgver=1.00.91
+pkgrel=1
+pkgdesc='Library for accessing Sybase and MS SQL Server databases'
+url='http://www.freetds.org'
+arch=('x86_64' 'ppc' 'ppc64')
+license=('LGPL')
+depends=('openssl' 'unixodbc')
+backup=('etc/freetds/freetds.conf'
+        'etc/freetds/locales.conf'
+        'etc/freetds/pool.conf')
+source=("ftp://ftp.freetds.org/pub/freetds/stable/$pkgname-$pkgver.tar.bz2")
+sha512sums=('1c59870de63320c8f6230a910ff98d1a8081f3c0ce872425ac2bd617e0440ed1733fe355522f4fec31fb762b4789d1cc447a07e4b385ca50ac240b308e87003a')
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --sysconfdir=/etc/freetds --enable-msdblib \
+    --with-tdsver=7.0 --with-unixodbc=/usr --with-openssl
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}
