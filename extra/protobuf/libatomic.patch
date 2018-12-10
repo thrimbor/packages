@@ -1,0 +1,75 @@
+From 56b40a8f055cfd05633054aed5d3466a6e058b72 Mon Sep 17 00:00:00 2001
+From: Ben Wolsieffer <benwolsieffer@gmail.com>
+Date: Thu, 4 Oct 2018 20:25:10 -0400
+Subject: [PATCH] Link to libatomic when necessary (eg. on armv6l)
+
+---
+ configure.ac    | 16 ++++++++++++++++
+ src/Makefile.am |  4 ++--
+ tests.sh        |  4 ++--
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 8e1c308ce1..18a77f5977 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -165,6 +165,22 @@ AS_IF([test "$with_zlib" != no], [
+ ])
+ AM_CONDITIONAL([HAVE_ZLIB], [test $HAVE_ZLIB = 1])
+ 
++dnl On some platforms, std::atomic needs a helper library
++AC_MSG_CHECKING(whether -latomic is needed)
++AC_LINK_IFELSE([AC_LANG_SOURCE([[
++  #include <atomic>
++  #include <cstdint>
++  std::atomic<std::int64_t> v;
++  int main() {
++    return v;
++  }
++]])], STD_ATOMIC_NEED_LIBATOMIC=no, STD_ATOMIC_NEED_LIBATOMIC=yes)
++AC_MSG_RESULT($STD_ATOMIC_NEED_LIBATOMIC)
++if test "x$STD_ATOMIC_NEED_LIBATOMIC" = xyes; then
++  LIBATOMIC_LIBS="-latomic"
++fi
++AC_SUBST([LIBATOMIC_LIBS])
++
+ AS_IF([test "$with_protoc" != "no"], [
+   PROTOC=$with_protoc
+   AS_IF([test "$with_protoc" = "yes"], [
+diff --git a/src/Makefile.am b/src/Makefile.am
+index bfa0d3ad1b..24c63669fd 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -166,7 +166,7 @@ nobase_include_HEADERS =                                         \
+ 
+ lib_LTLIBRARIES = libprotobuf-lite.la libprotobuf.la libprotoc.la
+ 
+-libprotobuf_lite_la_LIBADD = $(PTHREAD_LIBS)
++libprotobuf_lite_la_LIBADD = $(PTHREAD_LIBS) $(LIBATOMIC_LIBS)
+ libprotobuf_lite_la_LDFLAGS = -version-info 16:0:0 -export-dynamic -no-undefined
+ if HAVE_LD_VERSION_SCRIPT
+ libprotobuf_lite_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libprotobuf-lite.map
+@@ -212,7 +212,7 @@ libprotobuf_lite_la_SOURCES =                                  \
+   google/protobuf/io/zero_copy_stream.cc                       \
+   google/protobuf/io/zero_copy_stream_impl_lite.cc
+ 
+-libprotobuf_la_LIBADD = $(PTHREAD_LIBS)
++libprotobuf_la_LIBADD = $(PTHREAD_LIBS) $(LIBATOMIC_LIBS)
+ libprotobuf_la_LDFLAGS = -version-info 16:0:0 -export-dynamic -no-undefined
+ if HAVE_LD_VERSION_SCRIPT
+ libprotobuf_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libprotobuf.map
+diff --git a/tests.sh b/tests.sh
+index fc7c95c4d6..df41bc5a61 100755
+--- a/tests.sh
++++ b/tests.sh
+@@ -16,8 +16,8 @@ internal_build_cpp() {
+   git submodule update --init --recursive
+ 
+   ./autogen.sh
+-  ./configure CXXFLAGS="-fPIC"  # -fPIC is needed for python cpp test.
+-                                # See python/setup.py for more details
++  ./configure CXXFLAGS="-fPIC -std=c++11"  # -fPIC is needed for python cpp test.
++                                           # See python/setup.py for more details
+   make -j2
+ }
+ 
