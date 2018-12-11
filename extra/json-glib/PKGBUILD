@@ -1,0 +1,39 @@
+# $Id$
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=json-glib
+pkgver=1.4.2
+pkgrel=2
+pkgdesc="JSON library built on GLib"
+url="https://wiki.gnome.org/Projects/JsonGlib"
+arch=(x86_64 'ppc' 'ppc64')
+license=(GPL)
+depends=(glib2)
+makedepends=(gobject-introspection git gtk-doc meson)
+_commit=68e90dafac7022fc467bac8d2dd04d3f8a5a88a7  # tags/1.4.2^0
+source=("git+https://gitlab.gnome.org/GNOME/json-glib.git#commit=$_commit")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+  git describe --tags | sed 's/-/+/g'
+}
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build -Ddocs=true
+  ninja -C build
+}
+
+check() {
+  cd build
+  meson test
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  rm -r "$pkgdir"/usr/{lib,share}/installed-tests
+}
