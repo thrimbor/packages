@@ -1,0 +1,45 @@
+# $Id$
+# Maintainer: Laurent Carlier <lordheavym@gmail.com>
+
+pkgname=libepoxy
+pkgver=1.5.2
+pkgrel=1
+pkgdesc="Library handling OpenGL function pointer management"
+url="https://github.com/anholt/libepoxy"
+arch=(x86_64 'ppc' 'ppc64')
+license=(MIT)
+depends=(glibc)
+makedepends=(python mesa-libgl git meson doxygen graphviz)
+_commit=707f50e680ab4f1861b1e54ca6e2907aaca56c12  # tags/1.5.2^0
+source=("git+https://github.com/anholt/libepoxy#commit=$_commit")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd $pkgname
+  git describe --tags | sed 's/-/+/g'
+}
+
+prepare() {
+  cd $pkgname
+  # Reduce docs size
+  printf '%s\n' >>doc/Doxyfile.in \
+    HAVE_DOT=yes DOT_IMAGE_FORMAT=svg INTERACTIVE_SVG=yes
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D docs=true
+  ninja -C build
+}
+
+check() {
+  cd build
+  meson test
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 $pkgname/COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+# vim:set sw=2 noet:
