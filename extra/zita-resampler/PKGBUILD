@@ -1,0 +1,49 @@
+# $Id$
+# Maintainer: David Runge <dave@sleepmap.de>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Philipp Überbacher <murks at lavabit dot com>
+
+pkgname=zita-resampler
+pkgver=1.6.0
+pkgrel=2
+pkgdesc="A C++ library for resampling audio signals"
+url="https://kokkinizita.linuxaudio.org/linuxaudio/"
+arch=('x86_64' 'ppc' 'ppc64')
+license=('GPL3')
+depends=('gcc-libs' 'libsndfile')
+source=("https://kokkinizita.linuxaudio.org/linuxaudio/downloads/${pkgname}-${pkgver}.tar.bz2")
+sha512sums=('fefe01dfc459a7ee0a98965b6e354cfe23b8e18838eeedabe2a6d965e9e413c8bafb9ebb11f8328852f18be20c14443785214b000065887e4482aa8d5e6b34f5')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  # FS#36248 - strip march=native
+  sed -e '/native/d' -i {libs,apps}/Makefile
+  # removing local call to ldconfig
+  sed -e '/ldconfig/d' -i libs/Makefile
+}
+
+build() {
+  cd "${pkgname}-${pkgver}/libs"
+  # libs
+  make PREFIX=/usr
+  # create lib link for building apps
+  ln -sv "lib${pkgname}.so.${pkgver}" "lib${pkgname}.so"
+  # apps
+  cd ../apps
+  make PREFIX=/usr LDFLAGS+=" -L../libs" CXXFLAGS+=" -I../libs"
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  make -C libs DESTDIR="$pkgdir/" PREFIX=/usr LIBDIR=lib install
+  # apps
+  install -t "${pkgdir}/usr/bin" -vDm755 apps/zre{sample,tune}
+  # man
+  install -t "${pkgdir}/usr/share/man/man1" -vDm644 apps/zre{sample,tune}.1
+  # docs
+  install -t "${pkgdir}/usr/share/doc/${pkgname}" \
+    -vDm644 {AUTHORS,README} \
+    -vDm644 docs/*
+  # create library symlinks
+  ldconfig -n "$pkgdir"/usr/lib
+}
