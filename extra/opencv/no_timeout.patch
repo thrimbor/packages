@@ -1,0 +1,10 @@
+--- cmake/OpenCVDownload.cmake	2018-07-04 13:05:47.000000000 +0200
++++ cmake/OpenCVDownload.cmake	2019-01-03 22:09:09.725231586 +0100
+@@ -153,7 +153,6 @@
+     ocv_download_log("#cmake_download \"${CACHE_CANDIDATE}\" \"${DL_URL}\"")
+     file(DOWNLOAD "${DL_URL}" "${CACHE_CANDIDATE}"
+          INACTIVITY_TIMEOUT 60
+-         TIMEOUT 600
+          STATUS status
+          LOG __log)
+     if(NOT OPENCV_SKIP_FILE_DOWNLOAD_DUMP)  # workaround problem with old CMake versions: "Invalid escape sequence"
