@@ -1,0 +1,56 @@
+# $Id: PKGBUILD 371237 2018-08-13 03:05:40Z felixonmars $
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgbase=m2r
+pkgname=(m2r python2-m2r)
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Markdown to reStructuredText converter"
+arch=('any')
+url="https://github.com/miyakogi/m2r"
+license=('MIT')
+makedepends=('python-setuptools' 'python2-setuptools' 'python-mistune' 'python2-mistune'
+             'python-docutils' 'python2-docutils')
+checkdepends=('python2-mock' 'python-pygments' 'python2-pygments' 'python-pytest-runner'
+              'python2-pytest-runner')
+source=("$pkgbase-$pkgver.tar.gz::https://github.com/miyakogi/m2r/archive/v$pkgver.tar.gz")
+sha512sums=('df4af19bd8aac723a954f7ff96bdc780b182a935f68d193cd10ee44811f008c3dff9c39e7fe15b15eb89c0526fd50abfbb348d88135738903a96da7b8d873472')
+
+prepare() {
+  cp -a m2r-$pkgver{,-py2}
+}
+
+build() {
+  cd "$srcdir"/m2r-$pkgver
+  python setup.py build
+
+  cd "$srcdir"/m2r-$pkgver-py2
+  python2 setup.py build
+}
+
+check() {
+  cd "$srcdir"/m2r-$pkgver
+  python setup.py pytest
+
+  cd "$srcdir"/m2r-$pkgver-py2
+  python2 setup.py pytest
+}
+
+package_m2r() {
+  depends=('python-mistune' 'python-docutils' 'python-setuptools')
+
+  cd "$srcdir"/m2r-$pkgver
+  python setup.py install --root="$pkgdir" --prefix=/usr --optimize=1
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+package_python2-m2r() {
+  depends=('python2-mistune' 'python2-docutils' 'python2-setuptools')
+
+  cd "$srcdir"/m2r-$pkgver-py2
+  python2 setup.py install --root="$pkgdir" --prefix=/usr --optimize=1
+  mv "$pkgdir"/usr/bin/m2r{,-python2}
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:
