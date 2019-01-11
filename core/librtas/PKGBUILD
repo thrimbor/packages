@@ -1,0 +1,24 @@
+pkgname=librtas
+pkgver=2.0.2
+pkgrel=1
+pkgdesc="librtas library for Linux on Power systems"
+arch=('ppc' 'ppc64')
+url="https://github.com/ibm-power-utilities/librtas"
+license=('LGPL')
+groups=('base')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/ibm-power-utilities/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('b47b2a6f140347ac265e2c66ddf68293f6cdcc7c0c9a78c6e21ff52846465415')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}
