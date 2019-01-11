@@ -1,0 +1,28 @@
+pkgname=powerpc-utils
+pkgver=1.3.6
+pkgrel=1
+pkgdesc="Tools for setting boot variables from Linux (PowerPC specific)"
+arch=('ppc' 'ppc64')
+url="https://github.com/ibm-power-utilities/powerpc-utils"
+license=("GPL2+")
+group=('base')
+depends=('librtas')
+conflicts=('pmac-utils')
+replaces=('pmac-utils')
+provides=('pmac-utils')
+options=('!distcc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/ibm-power-utilities/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('0ff10b01761ea1b598b05aaf9a5c20da8ab8784b3dc6d0c7f19d15426672523b')
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir}/ install
+}
