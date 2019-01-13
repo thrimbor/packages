@@ -19,7 +19,7 @@ sha256sums=('67d2fa6e147a45875fe972de62d907ef866fe784c495c363bf34756c444a5d61'
 prepare() {
   cd "busybox-$pkgver"
 
-  local safeflags="-march=${CARCH/_/-} -mtune=generic -Os -pipe -fno-strict-aliasing"
+  local safeflags=" -Os -pipe -fno-strict-aliasing"
 
   sed 's|^\(CONFIG_EXTRA_CFLAGS\)=.*|\1="'"$safeflags"'"|' "$srcdir/config" > .config
 }
