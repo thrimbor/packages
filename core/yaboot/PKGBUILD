@@ -22,6 +22,8 @@ build() {
 
 package() {
     cd "$srcdir"
-    cp -R ./ "$pkgdir/"
+    cp -R etc "$pkgdir/"
+    cp -R usr "$pkgdir/"
     mv "$pkgdir/etc/yaboot.conf.sample" "$pkgdir/etc/yaboot.conf"
+    mv "$pkgdir/usr/sbin" "$pkgdir/usr/bin"
 }
