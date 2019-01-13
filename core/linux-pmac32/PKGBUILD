@@ -117,6 +117,7 @@ _package() {
 }
 
 _package-headers() {
+  provides=('linux-headers')
   pkgdesc="Header files and scripts for building modules for ${pkgbase/linux/Linux} kernel"
 
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
@@ -195,6 +196,7 @@ _package-headers() {
 }
 
 _package-docs() {
+  provides=('linux-docs')	
   pkgdesc="Kernel hackers manual - HTML documentation that comes with the ${pkgbase/linux/Linux} kernel"
 
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
