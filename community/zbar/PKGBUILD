@@ -26,7 +26,8 @@ prepare() {
 
 build() {
   cd zbar-$pkgver
-  PKG_CONFIG_PATH="/usr/lib/imagemagick6/pkgconfig" \
+  # ALPPC: Changed imagemagick6 to imagemagick7
+  PKG_CONFIG_PATH="/usr/lib/imagemagick7/pkgconfig" \
   PYTHON="/usr/bin/python2" \
   ./configure --prefix=/usr --with-qt --with-gtk CFLAGS="$CFLAGS -DNDEBUG"
   sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
