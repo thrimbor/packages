@@ -15,7 +15,7 @@ md5sums=('SKIP')
 build() {
   cd "${srcdir}/${pkgname}"
   ./autogen.sh
-  ./configure --prefix=/usr --disable-static --libdir=/usr/lib 
+  ./configure --prefix=/usr --disable-static --libdir=/usr/lib --disable-werror
   make
 }
 
