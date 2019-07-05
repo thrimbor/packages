@@ -16,7 +16,7 @@ source=("https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgve
         kdebug-395988.patch::"https://cgit.kde.org/kxmlgui.git/patch/?id=d35a8828")
 sha256sums=('502835c15ba254a7e405957c40ba8b212c885182774b00e47384851b7b5f6858'
             'SKIP'
-            '352d2cd08e65858a310b3f9fadca18a2441de51603f12f7a68a943a17d5019c6')
+            '102ad5255f70d0d374878c42c58b46d2ef5d36e1f02948561d2676b017f7131c')
 validpgpkeys=(53E6B47B45CEA3E0D5B7457758D0EE648A48B3BB) # David Faure <faure@kde.org>
 
 prepare() {
